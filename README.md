@@ -1,8 +1,12 @@
 # facerecognition
 
+## Requirements
+- Docker
+- NodeJS 8+
+
 ## Usage
 
-Setup:
+Setup: (the first setup can take a couple of minutes since the docker container will be downloaded)
 ```
 npm i
 ```
