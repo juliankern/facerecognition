@@ -1,0 +1,20 @@
+{
+  "name": "facerecognition",
+  "version": "1.0.0",
+  "description": "## Usage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "docker build -t jk_facerecognition ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juliankern/facerecognition.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juliankern/facerecognition/issues"
+  },
+  "homepage": "https://github.com/juliankern/facerecognition#readme"
+}

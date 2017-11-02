@@ -2,29 +2,25 @@
 
 ## Usage
 
-Build Docker Container:
+Setup:
 ```
-docker build -t <NAME> .
-```
-For example:
-```
-docker build -t jk_facerecognition .
+npm i
 ```
 
 Train with face images: (Images should be placed in subfolders, one for each person, with multiple images per person from different angles)
 ```
-docker run -v $PWD:/host/workdir -t -i <NAME> train <FACE_FOLDER>
+node bin/train <FACE_FOLDER>
 ```
 For example:
 ```
-docker run -v $PWD:/host/workdir -t -i jk_facerecognition train Faces/
+node bin/train Faces/
 ```
 
 Recognize a single face
 ```
-docker run -v $PWD:/host/workdir -t -i <NAME> recognize <IMAGE> 
+node bin/recognize <IMAGE> 
 ```
 For example:
 ```
-docker run -v $PWD:/host/workdir -t -i jk_facerecognition recognize Testfaces/IMG_0991.JPG
+node bin/recognize Testfaces/IMG_0991.JPG
 ```

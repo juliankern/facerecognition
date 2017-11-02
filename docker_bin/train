@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+
+const openfacePath = '/root/openface';
+const workdirPath = '/host/workdir';
+const peoplePath = '/host/people';
+
+alignImages();
+
+function alignImages() {
+    console.log('aligning images...');
+    hookLogs(spawn(`${openfacePath}/util/align-dlib.py`, [`${peoplePath}`, 'align', 'outerEyesAndNose', `${workdirPath}/aligned-images/`, '--size', '96']), generateEmbeddings);
+}
+
+function generateEmbeddings() {
+    console.log('images aligned.');
+    console.log('generating embeddings...');
+    hookLogs(spawn(`${openfacePath}/batch-represent/main.lua`, ['-outDir', `${workdirPath}/generated-embeddings/`, '-data', `${workdirPath}/aligned-images/`]), trainDetection);
+}
+
+function trainDetection() {
+    console.log('embeddings generated.');
+    console.log('start training...');
+    hookLogs(spawn(`${openfacePath}/demos/classifier.py`, ['train', `${workdirPath}/generated-embeddings/`]), done);
+}
+
+function done() {
+    console.log('training successful!');
+}
+
+function hookLogs(command, callback) {
+    command.stderr.on('data', (data) => {
+        if (!(data + '').includes('DeprecationWarning')) {
+            console.log('ERR:', data + '');
+        }
+    });
+
+    command.on('close', (code) => {
+        if (code !== 0) console.log(`child process exited with code ${code}`);
+        callback();
+    });
+}
