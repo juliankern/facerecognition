@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+
+const openfacePath = '/root/openface';
+const workdirPath = '/host/workdir';
+
+const image = process.argv[2];
+
+hookLogs(spawn(`${openfacePath}/demos/classifier.py`, ['infer', `${workdirPath}/generated-embeddings/classifier.pkl`, `${workdirPath}/${image}`]));
+
+function hookLogs(command, callback) {
+    command.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    command.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+
+    command.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+        if (callback) callback();
+    });
+}

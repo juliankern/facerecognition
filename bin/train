@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+
+const openfacePath = '/root/openface';
+const workdirPath = '/host/workdir';
+
+const directory = process.argv[2];
+
+alignImages();
+
+
+function alignImages() {
+    hookLogs(spawn(`${openfacePath}/util/align-dlib.py`, [`${workdirPath}/${directory}`, 'align', 'outerEyesAndNose', `${workdirPath}/aligned-images/`, '--size', '96']), generateEmbeddings);
+}
+
+function generateEmbeddings() {
+    hookLogs(spawn(`${openfacePath}/batch-represent/main.lua`, ['-outDir', `${workdirPath}/generated-embeddings/`, '-data', `${workdirPath}/aligned-images/`]), trainDetection);
+}
+
+function trainDetection() {
+    hookLogs(spawn(`${openfacePath}/demos/classifier.py`, ['train', `${workdirPath}/generated-embeddings/`]), done);
+}
+
+function done() {
+    console.log('Training successful!');
+}
+
+function hookLogs(command, callback) {
+    command.stdout.on('data', (data) => {
+        console.log(data + '');
+    });
+
+    command.stderr.on('data', (data) => {
+        console.log(`ERR: ${data}`);
+    });
+
+    command.on('close', (code) => {
+        if (code !== 0) console.log(`child process exited with code ${code}`);
+        callback();
+    });
+}
